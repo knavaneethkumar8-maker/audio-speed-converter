@@ -10,9 +10,19 @@
 
   <div class="container">
     <h1>Audio Slowdown Tool</h1>
-    <p>Upload audio and download normal, 4×, 8× and 16× slowed WAV files.</p>
+    <p>Upload audio and enter a speed factor (e.g. 0.5 = 2× slower).</p>
 
     <input type="file" id="audioFile" accept="audio/*">
+
+    <input 
+      type="number" 
+      id="speedFactor" 
+      step="0.01" 
+      min="0.05" 
+      max="1"
+      placeholder="Speed factor (eg: 0.5)"
+    >
+
     <button onclick="upload()">Upload & Convert</button>
 
     <div id="loader" class="hidden">Processing...</div>
@@ -20,22 +30,28 @@
     <div id="downloads" class="hidden">
       <h3>Download Files</h3>
       <a id="normalLink" download>Normal WAV</a>
-      <a id="slow4Link" download>4× Slowed WAV</a>
-      <a id="slow8Link" download>8× Slowed WAV</a>
-      <a id="slow16Link" download>16× Slowed WAV</a>
+      <a id="slowLink" download>Slowed WAV</a>
     </div>
   </div>
 
 <script>
 async function upload() {
   const fileInput = document.getElementById("audioFile");
+  const speedInput = document.getElementById("speedFactor");
+
   if (!fileInput.files.length) {
     alert("Select an audio file");
     return;
   }
 
+  if (!speedInput.value || speedInput.value <= 0 || speedInput.value > 1) {
+    alert("Enter valid speed factor (0 < factor ≤ 1)");
+    return;
+  }
+
   const formData = new FormData();
   formData.append("audio", fileInput.files[0]);
+  formData.append("speed", speedInput.value);
 
   document.getElementById("loader").classList.remove("hidden");
   document.getElementById("downloads").classList.add("hidden");
@@ -50,9 +66,7 @@ async function upload() {
   document.getElementById("loader").classList.add("hidden");
 
   document.getElementById("normalLink").href = data.normal;
-  document.getElementById("slow4Link").href = data.slow4;
-  document.getElementById("slow8Link").href = data.slow8;
-  document.getElementById("slow16Link").href = data.slow16;
+  document.getElementById("slowLink").href = data.slow;
 
   document.getElementById("downloads").classList.remove("hidden");
 }
