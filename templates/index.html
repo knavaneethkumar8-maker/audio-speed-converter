@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Slowdown Tool</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Audio Slowdown Tool</h1>
+    <p>Upload audio and download normal, 4×, 8× and 16× slowed WAV files.</p>
+
+    <input type="file" id="audioFile" accept="audio/*">
+    <button onclick="upload()">Upload & Convert</button>
+
+    <div id="loader" class="hidden">Processing...</div>
+
+    <div id="downloads" class="hidden">
+      <h3>Download Files</h3>
+      <a id="normalLink" download>Normal WAV</a>
+      <a id="slow4Link" download>4× Slowed WAV</a>
+      <a id="slow8Link" download>8× Slowed WAV</a>
+      <a id="slow16Link" download>16× Slowed WAV</a>
+    </div>
+  </div>
+
+<script>
+async function upload() {
+  const fileInput = document.getElementById("audioFile");
+  if (!fileInput.files.length) {
+    alert("Select an audio file");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("audio", fileInput.files[0]);
+
+  document.getElementById("loader").classList.remove("hidden");
+  document.getElementById("downloads").classList.add("hidden");
+
+  const res = await fetch("/upload", {
+    method: "POST",
+    body: formData
+  });
+
+  const data = await res.json();
+
+  document.getElementById("loader").classList.add("hidden");
+
+  document.getElementById("normalLink").href = data.normal;
+  document.getElementById("slow4Link").href = data.slow4;
+  document.getElementById("slow8Link").href = data.slow8;
+  document.getElementById("slow16Link").href = data.slow16;
+
+  document.getElementById("downloads").classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
